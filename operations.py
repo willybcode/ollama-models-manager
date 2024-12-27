@@ -86,12 +86,12 @@ def copy_model(from_dir: str, to_dir: str, model: ModelInfo, always_replace: boo
         if path_check(to_path):
             if os.path.getsize(from_path) == os.path.getsize(to_path):
                 if always_replace:
-                    print(f"Replacing {to_path}")
+                    print(f" Replacing {to_path}")
                 else:
-                    print(f"Skipped: {file['filename']} ({pretty_print_size(os.path.getsize(from_path))}) already exists in destination.")
+                    print(f" Skipped: {file['filename']} ({pretty_print_size(os.path.getsize(from_path))}) already exists in destination.")
                     continue
             else:
-                print(f"Soft Replacing {to_path}")
+                print(f" Soft Replacing {to_path}")
 
         os.makedirs(os.path.dirname(to_path), exist_ok=True)
         print(f" Copying: {file['filename']} {pretty_print_size(os.path.getsize(from_path))} ({os.path.getsize(from_path)} bytes)")
@@ -178,12 +178,12 @@ def delete_model(from_dir: str, model: ModelInfo, all_hashes: List[ModelInfo]) -
                 clone_list.append(h.model_name)
                 
         if clone_list:
-            print(f"Skipped: {file['filename']} is also used by [{', '.join(clone_list)}]")
+            print(f" Skipped: {file['filename']} is also used by [{', '.join(clone_list)}]")
             continue
             
         try:
             os.remove(from_path)
-            print(f"Deleted: {from_path}")
+            print(f" Deleted: {from_path}")
         except Exception as e:
             print(f"Error deleting {from_path}: {e}")
 
