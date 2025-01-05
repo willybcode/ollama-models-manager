@@ -1,10 +1,10 @@
 """Command-line interface for Ollama Models Manager."""
 
-from typing import List, Optional
+from typing import List
 from enum import Enum, auto
 
 from utils import exist_path_check, validate_input, validate_selection_range
-from models import find_models, show_models_list, get_all_hashes, ModelInfo
+from models import show_models_list, get_models_data, ModelInfo
 from operations import copy_model, delete_model, move_model
 
 class Action(Enum):
@@ -107,7 +107,7 @@ def run(
     exist_path_check(from_dir + "manifests")
     
     # Get available models
-    models = find_models(from_dir)
+    models = get_models_data(from_dir)
     
     # Get target models if not specified
     if not all_models and not target_models:
@@ -138,7 +138,7 @@ def run(
     # Get all hashes if needed
     all_hashes = None
     if action in ["delete", "move"]:
-        all_hashes = get_all_hashes(from_dir)
+        all_hashes = get_models_data(from_dir)
         
     # Process each model
     try:

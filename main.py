@@ -2,11 +2,10 @@
 
 import argparse
 import sys
-from typing import List, Optional
 
-from models import find_models
+from models import get_models_data
 from utils import exist_path_check
-from cli import run, Action
+from cli import run
 
 # Default installation directory for Ollama
 LOCAL_INSTALL_DIR = "/usr/share/ollama/.ollama/models/"
@@ -120,7 +119,7 @@ def main() -> None:
     # Handle show command
     if args.show:
         print(f"\nShowing models found in {from_dir}\n")
-        models = find_models(from_dir)
+        models = get_models_data(from_dir)
         from cli import show_models_list
         show_models_list(models)
         sys.exit(0)
