@@ -116,9 +116,8 @@ def get_models_data(internal_dir: str,muted: bool = False) -> List[ModelInfo]:
         exit(1)
         
     if not muted:
-        print(f"Namespaces: {namespaces}")
-        print(f"Total models: {total_models}")
-        print(f"Total hashes: {total_hashes}")
-        print(f"Total size: (approx) {pretty_print_size(total_size)}")
+        print(f"Namespaces: {namespaces}\n")
         
+        print("Models | Hashes | Size")
+        print(f"{total_models:6d} | {total_hashes:6d} | {pretty_print_size(total_size)}")
     return models
