@@ -3,6 +3,8 @@
 import os
 import json
 import shutil
+import pwd
+import grp
 from typing import List, Dict, Any
 
 from utils import path_check, pretty_print_size
@@ -94,10 +96,30 @@ def copy_model(from_dir: str, to_dir: str, model: ModelInfo, always_replace: boo
                 print(f" Soft Replacing {to_path}")
 
         os.makedirs(os.path.dirname(to_path), exist_ok=True)
+        if '/usr/share/ollama' in to_dir: # using 'in' instead of 'startswith' for more flexibility
+            # Set directory ownership and permissions
+            try:
+                ollama_uid = pwd.getpwnam('ollama').pw_uid
+                ollama_gid = grp.getgrnam('ollama').gr_gid
+                os.chown(os.path.dirname(to_path), ollama_uid, ollama_gid)
+                os.chmod(os.path.dirname(to_path), 0o755)
+            except KeyError:
+                print("Warning: 'ollama' user or group not found, keeping default ownership")
+
         print(f" Copying: {file['filename']} {pretty_print_size(os.path.getsize(from_path))} ({os.path.getsize(from_path)} bytes)")
         
         try:
             shutil.copy(from_path, to_path)
+            if '/usr/share/ollama' in to_dir: # using 'in' instead of 'startswith' for more flexibility
+                # Change ownership to ollama user/group
+                try:
+                    ollama_uid = pwd.getpwnam('ollama').pw_uid
+                    ollama_gid = grp.getgrnam('ollama').gr_gid
+                    os.chown(to_path, ollama_uid, ollama_gid)
+                    # Set permissions to rw-r--r-- (644)
+                    os.chmod(to_path, 0o644)
+                except KeyError:
+                    print("Warning: 'ollama' user or group not found, keeping default ownership")
         except PermissionError:
             print("Permission denied. Try running the script with admin privileges.")
             exit(1)

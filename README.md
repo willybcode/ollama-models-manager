@@ -116,16 +116,16 @@ python main.py --from /media/external/models/ --show
    - Admin/sudo privileges are ONLY required when modifying the local Ollama installation
    - No sudo needed for:
      - Viewing models (--show)
-     - Copying models from local installation
-     - Any operations between external drives/folders
+     - Copying models from local installation (if permissions are not restricted)
+     - Any operations between external drives/folders (unless permissions are restricted)
    - Sudo required for:
      - Moving models from local installation
      - Deleting models from local installation
      - Copying/Moving models to local installation
 
 2. **Model Deletion**
-   - Models copied/moved to local Ollama install may not be removable via `ollama rm <model_name>`
-   - Use this script with `--action=delete` to remove such models
+   - Models copied/moved to local Ollama installation should be removable via `ollama rm <model_name>`
+   - Use this script with `--action=delete` to remove models in case `ollama rm` fails
    - Delete operations only affect models in the `--from` directory
    - The script preserves layers shared between models during deletion
 
@@ -136,8 +136,8 @@ python main.py --from /media/external/models/ --show
 
 4. **Disclaimer**
    - Use this script at your own risk
-   - We are not responsible for any damage to your system
-   - Not affiliated with Ollama.com or any of its affiliates
+   - I am not responsible for any damage to your system
+   - Not affiliated with Ollama.ai or any of its affiliates
 
 ## What It Doesn't Do
 
