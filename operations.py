@@ -1,8 +1,9 @@
 """Operations for managing Ollama models."""
 
+import sys
 import os
 import json
-import shutil
+import time
 import pwd
 import grp
 from typing import List, Dict, Any
@@ -106,10 +107,34 @@ def copy_model(from_dir: str, to_dir: str, model: ModelInfo, always_replace: boo
             except KeyError:
                 print("Warning: 'ollama' user or group not found, keeping default ownership")
 
-        print(f" Copying: {file['filename']} {pretty_print_size(os.path.getsize(from_path))} ({os.path.getsize(from_path)} bytes)")
+        # print(f" Copying: {file['filename']} {pretty_print_size(os.path.getsize(from_path))} ({os.path.getsize(from_path)} bytes)")
+        copy_print_text = f" Copying: {file['filename']} ({pretty_print_size(os.path.getsize(from_path))})"
         
         try:
-            shutil.copy(from_path, to_path)
+            # BEGIN: Manual copy with progress
+            total_size = os.path.getsize(from_path)
+            copied = 0
+            chunk_size = 1024 * 1024  # 1MB
+            start_time = time.time()
+            with open(from_path, 'rb') as src, open(to_path, 'wb') as dst:
+                while True:
+                    chunk = src.read(chunk_size)
+                    if not chunk:
+                        break
+                    dst.write(chunk)
+                    copied += len(chunk)
+                    elapsed = time.time() - start_time
+                    speed = copied / elapsed if elapsed > 0 else 0
+                    speed_str = f"{speed / (1024*1024):.2f} MB/s"
+                    copied_size_and_speed = f"{pretty_print_size(copied):9} @ {speed_str}"  
+                    percent = int((copied / total_size) * 100) if total_size else 100
+                    sys.stdout.write(
+                        f"\r {copy_print_text}  {percent:3}% {'':30}" if percent == 100
+                        else f"\r {copy_print_text}  {percent:3}% - {copied_size_and_speed}"
+                    )
+                    sys.stdout.flush()
+            sys.stdout.write("\n")
+            # END: Manual copy with progress
             if '/usr/share/ollama' in to_dir: # using 'in' instead of 'startswith' for more flexibility
                 # Change ownership to ollama user/group
                 try:
